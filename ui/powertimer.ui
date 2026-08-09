@@ -31,6 +31,44 @@
             </object>
         </child>
     </object>
+
+    <!-- Power action data model (extended dropdown list) -->
+    <object class="GtkListStore" id="lstActions">
+        <columns>
+            <column type="gchararray"/>
+            <column type="gchararray"/>
+            <column type="gboolean"/>
+        </columns>
+
+        <data>
+            <row>
+                <col id="0" translatable="yes">Shut down</col>
+                <col id="1">shutdown</col>
+                <col id="2">True</col>
+            </row>
+            <row>
+                <col id="0" translatable="yes">Restart</col>
+                <col id="1">restart</col>
+                <col id="2">True</col>
+            </row>
+            <row>
+                <col id="0" translatable="yes">Log out</col>
+                <col id="1">logout</col>
+                <col id="2">True</col>
+            </row>
+            <row>
+                <col id="0" translatable="yes">Suspend</col>
+                <col id="1">suspend</col>
+                <col id="2">True</col>
+            </row>
+            <row>
+                <col id="0" translatable="yes">Hibernate</col>
+                <col id="1">hibernate</col>
+                <col id="2">True</col>
+            </row>
+        </data>
+    </object>
+
     <!-- Main application window -->
     <object class="GtkWindow" id="winMain">
         <property name="title">PowerTimer</property>
@@ -43,14 +81,12 @@
             <object class="GtkHeaderBar" id="hdrMain">
                 <property name="title">PowerTimer</property>
                 <property name="show-close-button">True</property>
-
                 <!-- Status icon -->
                 <child>
                     <object class="GtkImage" id="imgStatus"/>
                 </child>
-
+                <!-- Hamburger menu button -->
                 <child>
-                    <!-- Hamburger menu button -->
                     <object class="GtkMenuButton" id="btnMenu">
                         <property name="popup">mnuMain</property>
                         <child>
@@ -62,20 +98,37 @@
                 </child>
             </object>
         </child>
+        <!-- Main vertical layout container -->
         <child>
-            <!-- Main vertical layout container -->
             <object class="GtkBox" id="boxMain">
                 <property name="orientation">vertical</property>
                 <property name="spacing">16</property>
                 <property name="margin">20</property>
+                <!-- Label for power action selection -->
                 <child>
-                    <!-- Label for power action selection -->
                     <object class="GtkLabel" id="lblAction">
                         <property name="label" translatable="yes">Select action</property>
                     </object>
                 </child>
+                <!-- Power action dropdown list -->
                 <child>
-                    <!-- Power action dropdown list -->
+                    <object class="GtkComboBox" id="cmbAction">
+                        <property name="model">lstActions</property>
+                        <property name="id-column">1</property>
+                        <property name="active">0</property>
+                        <!-- Text renderer -->
+                        <child>
+                            <object class="GtkCellRendererText" id="rndAction"/>
+                            <attributes>
+                                <attribute name="text">0</attribute>
+                                <attribute name="sensitive">2</attribute>
+                            </attributes>
+                        </child>
+                        <!-- Data model -->
+                        <property name="model">lstActions</property>
+                    </object>
+                </child>
+                <!-- <child>
                     <object class="GtkComboBoxText" id="cmbAction">
                         <items>
                             <item id="shutdown" translatable="yes">Shut down</item>
@@ -86,15 +139,15 @@
                         </items>
                         <property name="active">0</property>
                     </object>
-                </child>
+                </child> -->
+                <!-- Label for time selection -->
                 <child>
-                    <!-- Label for time selection -->
                     <object class="GtkLabel" id="lblTime">
                         <property name="label" translatable="yes">Select time</property>
                     </object>
                 </child>
+                <!-- Horizontal container for time input -->
                 <child>
-                    <!-- Horizontal container for time input -->
                     <object class="GtkBox" id="boxTime">
                         <property name="orientation">horizontal</property>
                         <property name="spacing">8</property>
@@ -103,8 +156,8 @@
                         <child>
                             <object class="GtkBox" id="boxHours">
                                 <property name="orientation">horizontal</property>
+                                <!-- Hours input field -->
                                 <child>
-                                    <!-- Hours input field -->
                                     <object class="GtkEntry" id="inpHours">
                                         <property name="text">00</property>
                                         <property name="width-chars">2</property>
@@ -113,12 +166,12 @@
                                         <style><class name="time-entry"/></style>
                                     </object>
                                 </child>
+                                <!-- Vertical arrow buttons -->
                                 <child>
-                                    <!-- Vertical arrow buttons -->
                                     <object class="GtkBox" id="boxHoursArrows">
                                         <property name="orientation">vertical</property>
+                                        <!-- Increase hours -->
                                         <child>
-                                            <!-- Increase hours -->
                                             <object class="GtkButton" id="btnHoursUp">
                                                 <child>
                                                     <object class="GtkImage">
@@ -127,8 +180,8 @@
                                                 </child>
                                             </object>
                                         </child>
+                                        <!-- Decrease hours -->
                                         <child>
-                                            <!-- Decrease hours -->
                                             <object class="GtkButton" id="btnHoursDown">
                                                 <child>
                                                     <object class="GtkImage">
@@ -141,9 +194,8 @@
                                 </child>
                             </object>
                         </child>
-
+                        <!-- Time separator label -->
                         <child>
-                            <!-- Time separator label -->
                             <object class="GtkLabel" id="lblSeparator">
                                 <property name="label">:</property>
                             </object>
@@ -152,7 +204,6 @@
                         <child>
                             <object class="GtkBox" id="boxMinutes">
                                 <property name="orientation">horizontal</property>
-
                                 <!-- Minutes input field -->
                                 <child>
                                     <object class="GtkEntry" id="inpMinutes">
@@ -163,12 +214,10 @@
                                         <style><class name="time-entry"/></style>
                                     </object>
                                 </child>
-
                                 <!-- Vertical arrow buttons -->
                                 <child>
                                     <object class="GtkBox" id="boxMinutesArrows">
                                         <property name="orientation">vertical</property>
-
                                         <!-- Increase minutes -->
                                         <child>
                                             <object class="GtkButton" id="btnMinutesUp">
@@ -179,7 +228,6 @@
                                                 </child>
                                             </object>
                                         </child>
-
                                         <!-- Decrease minutes -->
                                         <child>
                                             <object class="GtkButton" id="btnMinutesDown">
@@ -193,7 +241,6 @@
 
                                     </object>
                                 </child>
-
                             </object>
                         </child>
 
@@ -207,20 +254,20 @@
                     </object>
                 </child>
 
+                <!-- Horizontal container for action buttons -->
                 <child>
-                    <!-- Horizontal container for action buttons -->
                     <object class="GtkBox" id="boxButtons">
                         <property name="orientation">horizontal</property>
                         <property name="spacing">8</property>
                         <property name="halign">center</property>
+                        <!-- Start timer button -->
                         <child>
-                            <!-- Start timer button -->
                             <object class="GtkButton" id="btnStart">
                                 <property name="label" translatable="yes">Start timer</property>
                             </object>
                         </child>
+                        <!-- Cancel timer button -->
                         <child>
-                            <!-- Cancel timer button -->
                             <object class="GtkButton" id="btnCancel">
                                 <property name="label" translatable="yes">Cancel</property>
                                 <property name="sensitive">False</property>

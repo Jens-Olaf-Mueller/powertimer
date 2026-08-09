@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
+import os
 from datetime import datetime, timedelta, timezone
 
 import gi
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
+gi.require_version("Gio", "2.0")
 gi.require_version("GdkPixbuf", "2.0")
 
-
-from gi.repository import Gdk, GdkPixbuf, GLib
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib
 from gi.repository import Gtk as GTK
 
 APP_NAME = "PowerTimer"
@@ -62,20 +63,79 @@ def toggle_app_state(start=True):
     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(icon, 36, 36, True)
     builder.get_object("imgStatus").set_from_pixbuf(pixbuf)
 
+def logout():
+    bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+
+    proxy = Gio.DBusProxy.new_sync(
+        bus,
+        Gio.DBusProxyFlags.NONE,
+        None,
+        "org.gnome.SessionManager",
+        "/org/gnome/SessionManager",
+        "org.gnome.SessionManager",
+        None
+    )
+
+    proxy.call_sync(
+        "Logout",
+        GLib.Variant("(u)", (1,)),
+        Gio.DBusCallFlags.NONE,
+        -1,
+        None
+    )
+
+def execute_action(action):
+    if action == "logout":
+        logout()
+        return
+
+    methods = {
+        "suspend": "Suspend",
+        "hibernate": "Hibernate",
+        "restart": "Reboot",
+        "shutdown": "PowerOff",
+    }
+
+    if action not in methods:
+        print(f'"{action}" not yet implemented!')
+        return
+
+
+    bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+
+    proxy = Gio.DBusProxy.new_sync(
+        bus,
+        Gio.DBusProxyFlags.NONE,
+        None,
+        "org.freedesktop.login1",
+        "/org/freedesktop/login1",
+        "org.freedesktop.login1.Manager",
+        None
+    )
+
+    proxy.call_sync(
+        methods[action],
+        GLib.Variant("(b)", (True,)),
+        Gio.DBusCallFlags.NONE,
+        -1,
+        None
+    )
+
+
 
 # Python timer construct
-def on_timer_tick():
-    global timer_seconds, timer_id
+def on_timer_tick(action):
+    global timer_seconds, g_timer_id
 
     timer_seconds -= 1
-    print(timer_seconds)
 
     if timer_seconds <= 0:
-        timer_id = None
+        g_timer_id = None
         toggle_app_state(False)
-
-        print("Timer abgelaufen!")   # TODO: gewählte Aktion ausführen
+        execute_action(action)
         return False
+    else:
+        print(timer_seconds)
 
     return True # important! → 'True' recalls the method, 'False' stops the timer!
 
@@ -118,13 +178,13 @@ def validate_time(entry):
         entry.set_position(-1)
 
 
-def start_timer(hours, minutes):
-    print(f"Timer gestartet für {hours}:{minutes} ...")
-
+def start_timer(hours, minutes, action):
     global timer_seconds, g_timer_id
+
     timer_seconds = get_seconds_until(hours, minutes)
-    g_timer_id = GLib.timeout_add_seconds(1, on_timer_tick)
+    g_timer_id = GLib.timeout_add_seconds(1, on_timer_tick, action)
     toggle_app_state()
+    print(f"Timer gestartet für {hours}:{minutes}")
 
 
 def stop_timer():
@@ -145,9 +205,11 @@ def on_button_click(button):
         stop_timer()
         return False
 
-    hours, minutes = validate_time()
-    start_timer(hours, minutes)
-
+    # hours, minutes = validate_time()
+    hours = int(builder.get_object("inpHours").get_text() or 0)
+    minutes = int(builder.get_object("inpMinutes").get_text() or 0)
+    action = builder.get_object("cmbAction").get_active_id()
+    start_timer(hours, minutes, action)
     return True
 
 
@@ -191,6 +253,29 @@ def set_event_listeners():
 
     builder.get_object("mnuQuit").connect("activate", quit_app)
 
+def can_hibernate():
+    bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+
+    proxy = Gio.DBusProxy.new_sync(
+        bus,
+        Gio.DBusProxyFlags.NONE,
+        None,
+        "org.freedesktop.login1",
+        "/org/freedesktop/login1",
+        "org.freedesktop.login1.Manager",
+        None
+    )
+
+    result = proxy.call_sync(
+        "CanHibernate",
+        None,
+        Gio.DBusCallFlags.NONE,
+        -1,
+        None
+    )
+
+    return result.unpack()[0] in ("yes", "challenge")
+
 
 def init_ui():
     WINDOW.set_position(GTK.WindowPosition.CENTER)
@@ -201,6 +286,11 @@ def init_ui():
     now = datetime.now(timezone.utc).astimezone()
     builder.get_object("inpHours").set_text(f"{now.hour:02d}")
     builder.get_object("inpMinutes").set_text(f"{now.minute:02d}")
+
+    # disable menu item "Hibernate" when not available
+    if not can_hibernate():
+        actions = builder.get_object("lstActions")
+        actions[4][2] = False
 
     set_event_listeners()
     WINDOW.connect("delete-event", quit_app)
