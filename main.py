@@ -17,6 +17,11 @@ APP_NAME = "PowerTimer"
 timer_seconds = 0
 g_timer_id = None
 
+warning_dialog = None
+warning_label = None
+warning_progress = None
+shutdown_warning_shown = False
+
 builder = GTK.Builder()
 builder.add_from_file("ui/powertimer.ui")
 
@@ -51,8 +56,44 @@ def msg_box(prompt, title = APP_NAME, buttons = GTK.ButtonsType.OK):
     )
 
 
+def on_shutdown_warning_response(dialog, response):
+    global warning_dialog, warning_label, warning_progress
+    dialog.destroy()
+
+    warning_dialog = None
+    warning_label = None
+    warning_progress = None
+
+    if response != GTK.ResponseType.YES:
+        stop_timer()
+
+
+def show_shutdown_warning():
+    global warning_dialog, warning_label, warning_progress
+
+    warning_dialog = GTK.Dialog(
+        title="Shutdown",
+        transient_for=WINDOW,
+        modal=True
+    )
+
+    warning_dialog.add_button("No", GTK.ResponseType.NO)
+    warning_dialog.add_button("Yes", GTK.ResponseType.YES)
+    warning_dialog.connect("response", on_shutdown_warning_response)
+
+    content = warning_dialog.get_content_area()
+
+    warning_label = GTK.Label()
+    content.add(warning_label)
+
+    warning_progress = GTK.ProgressBar()
+    content.add(warning_progress)
+
+    warning_dialog.show_all()
+
+
 # here we gonna toggle the app's icon state and buttons
-def toggle_app_state(start=True):
+def toggle_app_state(start = True):
     builder.get_object("btnStart").set_sensitive(not start)
     builder.get_object("btnCancel").set_sensitive(start)
 
@@ -125,9 +166,20 @@ def execute_action(action):
 
 # Python timer construct
 def on_timer_tick(action):
-    global timer_seconds, g_timer_id
+    global timer_seconds, g_timer_id, shutdown_warning_shown
 
     timer_seconds -= 1
+
+
+    if action == "shutdown" and timer_seconds <= 60 and not shutdown_warning_shown:
+        shutdown_warning_shown = True
+        show_shutdown_warning()
+
+    if warning_dialog is not None:
+        warning_label.set_text(
+            f"Computer will be shut down in {timer_seconds} seconds!\nContinue?"
+        )
+        warning_progress.set_fraction(timer_seconds / 60)
 
     if timer_seconds <= 0:
         g_timer_id = None
@@ -179,10 +231,11 @@ def validate_time(entry):
 
 
 def start_timer(hours, minutes, action):
-    global timer_seconds, g_timer_id
+    global timer_seconds, g_timer_id, shutdown_warning_shown
 
     timer_seconds = get_seconds_until(hours, minutes)
     g_timer_id = GLib.timeout_add_seconds(1, on_timer_tick, action)
+    shutdown_warning_shown = False
     toggle_app_state()
     print(f"Timer gestartet für {hours}:{minutes}")
 
