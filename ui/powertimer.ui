@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <requires lib="gtk+" version="3.20"/>
+    <!-- Numeric range for hours -->
+    <object class="GtkAdjustment" id="adjHours">
+        <property name="lower">0</property>
+        <property name="upper">23</property>
+        <property name="step-increment">1</property>
+    </object>
+    <!-- Numeric range for minutes -->
+    <object class="GtkAdjustment" id="adjMinutes">
+        <property name="lower">0</property>
+        <property name="upper">59</property>
+        <property name="step-increment">1</property>
+    </object>
+    <!-- Main dropdown menu -->
+    <object class="GtkMenu" id="mnuMain">
+        <property name="width-request">160</property>
+        <!-- About menu item -->
+        <child>
+            <object class="GtkMenuItem" id="mnuAbout">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">About</property>
+            </object>
+        </child>
+        <!-- Quit menu item -->
+        <child>
+            <object class="GtkMenuItem" id="mnuQuit">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Quit</property>
+            </object>
+        </child>
+    </object>
+    <!-- Main application window -->
+    <object class="GtkWindow" id="winMain">
+        <property name="title">PowerTimer</property>
+        <property name="default-width">360</property>
+        <property name="default-height">280</property>
+        <property name="resizable">False</property>
+
+        <!-- Window title bar -->
+        <child type="titlebar">
+            <object class="GtkHeaderBar" id="hdrMain">
+                <property name="title">PowerTimer</property>
+                <property name="show-close-button">True</property>
+
+                <!-- Status icon -->
+                <child>
+                    <object class="GtkImage" id="imgStatus"/>
+                </child>
+
+                <child>
+                    <!-- Hamburger menu button -->
+                    <object class="GtkMenuButton" id="btnMenu">
+                        <property name="popup">mnuMain</property>
+                        <child>
+                            <object class="GtkImage" id="imgMenu">
+                                <property name="icon-name">open-menu-symbolic</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+            </object>
+        </child>
+        <child>
+            <!-- Main vertical layout container -->
+            <object class="GtkBox" id="boxMain">
+                <property name="orientation">vertical</property>
+                <property name="spacing">16</property>
+                <property name="margin">20</property>
+                <child>
+                    <!-- Label for power action selection -->
+                    <object class="GtkLabel" id="lblAction">
+                        <property name="label" translatable="yes">Select action</property>
+                    </object>
+                </child>
+                <child>
+                    <!-- Power action dropdown list -->
+                    <object class="GtkComboBoxText" id="cmbAction">
+                        <items>
+                            <item id="shutdown" translatable="yes">Shut down</item>
+                            <item id="restart" translatable="yes">Restart</item>
+                            <item id="logout" translatable="yes">Log out</item>
+                            <item id="suspend" translatable="yes">Suspend</item>
+                            <item id="hibernate" translatable="yes">Hibernate</item>
+                        </items>
+                        <property name="active">0</property>
+                    </object>
+                </child>
+                <child>
+                    <!-- Label for time selection -->
+                    <object class="GtkLabel" id="lblTime">
+                        <property name="label" translatable="yes">Select time</property>
+                    </object>
+                </child>
+                <child>
+                    <!-- Horizontal container for time input -->
+                    <object class="GtkBox" id="boxTime">
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">8</property>
+                        <property name="halign">center</property>
+                        <!-- Custom hours spinner -->
+                        <child>
+                            <object class="GtkBox" id="boxHours">
+                                <property name="orientation">horizontal</property>
+                                <child>
+                                    <!-- Hours input field -->
+                                    <object class="GtkEntry" id="inpHours">
+                                        <property name="text">00</property>
+                                        <property name="width-chars">2</property>
+                                        <property name="max-length">2</property>
+                                        <property name="xalign">0.5</property>
+                                        <style><class name="time-entry"/></style>
+                                    </object>
+                                </child>
+                                <child>
+                                    <!-- Vertical arrow buttons -->
+                                    <object class="GtkBox" id="boxHoursArrows">
+                                        <property name="orientation">vertical</property>
+                                        <child>
+                                            <!-- Increase hours -->
+                                            <object class="GtkButton" id="btnHoursUp">
+                                                <child>
+                                                    <object class="GtkImage">
+                                                        <property name="icon-name">pan-up-symbolic</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+                                        <child>
+                                            <!-- Decrease hours -->
+                                            <object class="GtkButton" id="btnHoursDown">
+                                                <child>
+                                                    <object class="GtkImage">
+                                                        <property name="icon-name">pan-down-symbolic</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+
+                        <child>
+                            <!-- Time separator label -->
+                            <object class="GtkLabel" id="lblSeparator">
+                                <property name="label">:</property>
+                            </object>
+                        </child>
+                        <!-- Custom minutes spinner -->
+                        <child>
+                            <object class="GtkBox" id="boxMinutes">
+                                <property name="orientation">horizontal</property>
+
+                                <!-- Minutes input field -->
+                                <child>
+                                    <object class="GtkEntry" id="inpMinutes">
+                                        <property name="text">00</property>
+                                        <property name="width-chars">2</property>
+                                        <property name="max-length">2</property>
+                                        <property name="xalign">0.5</property>
+                                        <style><class name="time-entry"/></style>
+                                    </object>
+                                </child>
+
+                                <!-- Vertical arrow buttons -->
+                                <child>
+                                    <object class="GtkBox" id="boxMinutesArrows">
+                                        <property name="orientation">vertical</property>
+
+                                        <!-- Increase minutes -->
+                                        <child>
+                                            <object class="GtkButton" id="btnMinutesUp">
+                                                <child>
+                                                    <object class="GtkImage">
+                                                        <property name="icon-name">pan-up-symbolic</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+
+                                        <!-- Decrease minutes -->
+                                        <child>
+                                            <object class="GtkButton" id="btnMinutesDown">
+                                                <child>
+                                                    <object class="GtkImage">
+                                                        <property name="icon-name">pan-down-symbolic</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+
+                                    </object>
+                                </child>
+
+                            </object>
+                        </child>
+
+                    </object>
+                </child>
+
+                <!-- Separator above action buttons -->
+                <child>
+                    <object class="GtkSeparator" id="sepButtons">
+                        <property name="orientation">horizontal</property>
+                    </object>
+                </child>
+
+                <child>
+                    <!-- Horizontal container for action buttons -->
+                    <object class="GtkBox" id="boxButtons">
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">8</property>
+                        <property name="halign">center</property>
+                        <child>
+                            <!-- Start timer button -->
+                            <object class="GtkButton" id="btnStart">
+                                <property name="label" translatable="yes">Start timer</property>
+                            </object>
+                        </child>
+                        <child>
+                            <!-- Cancel timer button -->
+                            <object class="GtkButton" id="btnCancel">
+                                <property name="label" translatable="yes">Cancel</property>
+                                <property name="sensitive">False</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </object>
+</interface>
