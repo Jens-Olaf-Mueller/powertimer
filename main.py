@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 import gi
 
 from timer_dialog import TimerDialog
+from tray_icon import TrayIcon
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
@@ -138,6 +139,7 @@ def on_timer_tick(action):
     global timer_seconds, g_timer_id
 
     timer_seconds -= 1
+    TRAY.update(action, timer_seconds)
 
     # if action in ("shutdown", "logout") and timer_seconds <= 60 and not DLG_TIMER.shown:
     #     DLG_TIMER.show(
@@ -166,6 +168,7 @@ def on_timer_tick(action):
         DLG_TIMER.response = None
         g_timer_id = None
         toggle_app_state(False)
+        TRAY.hide()
         execute_action(action)
         return False
 
@@ -217,6 +220,8 @@ def start_timer(hours, minutes, action):
     g_timer_id = GLib.timeout_add_seconds(1, on_timer_tick, action)
     DLG_TIMER.reset()
     toggle_app_state()
+    TRAY.show(action, timer_seconds)
+    WINDOW.hide()
     print(f"Timer gestartet für {hours}:{minutes}")
 
 
@@ -229,6 +234,10 @@ def stop_timer():
 
     print("Timer abgebrochen!")
     toggle_app_state(False)
+    TRAY.hide()
+
+    if not WINDOW.get_visible():
+        restore_window()
 
 
 def on_button_click(button):
@@ -327,7 +336,20 @@ def init_ui():
         actions[4][2] = False
 
     set_event_listeners()
-    WINDOW.connect("delete-event", quit_app)
+    WINDOW.connect("delete-event", on_window_delete)
+
+
+def restore_window():
+    WINDOW.show()
+    WINDOW.present()
+
+
+def on_window_delete(_window, _event):
+    if g_timer_id is not None:
+        WINDOW.hide()
+        return True
+
+    return quit_app()
 
 
 def quit_app(*_args):
@@ -347,6 +369,7 @@ def quit_app(*_args):
     return False
 
 
+TRAY = TrayIcon(restore_window, quit_app)
 init_ui()
 WINDOW.show_all()
 GTK.main()
