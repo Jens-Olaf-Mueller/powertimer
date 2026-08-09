@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
+import gettext
 
 import gi
 
 gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk as GTK
+
+# Short alias for gettext: marks Python strings for translation.
+_ = gettext.gettext
 
 DLG_WIDTH = 512
 DLG_HEIGHT = 144
@@ -39,12 +43,12 @@ class TimerDialog:
         content.add(self.progress)
 
         self.btn_cancel = self.dialog.add_button(
-            "Cancel",
+            _("Cancel"),
             GTK.ResponseType.CANCEL
         )
 
         self.btn_execute = self.dialog.add_button(
-            "Execute",
+            _("Execute"),
             GTK.ResponseType.ACCEPT
         )
 

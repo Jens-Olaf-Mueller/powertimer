@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import gettext
 from datetime import datetime, timedelta, timezone
 
 import gi
@@ -15,6 +16,13 @@ from gi.repository import Gdk, GdkPixbuf, Gio, GLib
 from gi.repository import Gtk as GTK
 
 APP_NAME = "PowerTimer"
+ACTION_PROMPTS = {
+    "shutdown": "Computer will shut down in {seconds} seconds.",
+    "logout": "You will be logged out in {seconds} seconds.",
+}
+
+# "_" = Short alias for gettext: marks Python strings for translation.
+_ = gettext.gettext
 timer_seconds = 0
 g_timer_id = None
 
@@ -131,10 +139,17 @@ def on_timer_tick(action):
 
     timer_seconds -= 1
 
-    if action == "shutdown" and timer_seconds <= 60 and not DLG_TIMER.shown:
+    # if action in ("shutdown", "logout") and timer_seconds <= 60 and not DLG_TIMER.shown:
+    #     DLG_TIMER.show(
+    #         "Attention!",
+    #         f"Computer will {action} in {{seconds}} seconds.",
+    #         timer_seconds
+    #     )
+
+    if action in ACTION_PROMPTS and timer_seconds <= 60 and not DLG_TIMER.shown:
         DLG_TIMER.show(
             "Attention!",
-            f"Computer will {action} in {{seconds}} seconds.",
+            ACTION_PROMPTS[action],
             timer_seconds
         )
 
