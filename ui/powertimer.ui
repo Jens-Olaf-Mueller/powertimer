@@ -128,18 +128,6 @@
                         <property name="model">lstActions</property>
                     </object>
                 </child>
-                <!-- <child>
-                    <object class="GtkComboBoxText" id="cmbAction">
-                        <items>
-                            <item id="shutdown" translatable="yes">Shut down</item>
-                            <item id="restart" translatable="yes">Restart</item>
-                            <item id="logout" translatable="yes">Log out</item>
-                            <item id="suspend" translatable="yes">Suspend</item>
-                            <item id="hibernate" translatable="yes">Hibernate</item>
-                        </items>
-                        <property name="active">0</property>
-                    </object>
-                </child> -->
                 <!-- Label for time selection -->
                 <child>
                     <object class="GtkLabel" id="lblTime">

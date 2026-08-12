@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 
 import gi
 
+from about import AboutBox
+from appinfo import APP_INFO
 from timer_dialog import TimerDialog
 from tray_icon import TrayIcon
 
@@ -16,7 +18,6 @@ gi.require_version("GdkPixbuf", "2.0")
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib
 from gi.repository import Gtk as GTK
 
-APP_NAME = "PowerTimer"
 ACTION_PROMPTS = {
     "shutdown": "Computer will shut down in {seconds} seconds.",
     "logout": "You will be logged out in {seconds} seconds.",
@@ -41,9 +42,11 @@ GTK.StyleContext.add_provider_for_screen(
     GTK.STYLE_PROVIDER_PRIORITY_APPLICATION
 )
 WINDOW = builder.get_object("winMain")
+DLG_ABOUT = AboutBox(WINDOW, APP_INFO)
 DLG_TIMER = TimerDialog(WINDOW)
 
-def msg_box(prompt, title = APP_NAME, buttons = GTK.ButtonsType.OK):
+
+def msg_box(prompt, title = APP_INFO.name, buttons = GTK.ButtonsType.OK):
     dialog = GTK.MessageDialog(
         transient_for = WINDOW,
         modal = True,
@@ -75,6 +78,7 @@ def toggle_app_state(start = True):
     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(icon, 36, 36, True)
     builder.get_object("imgStatus").set_from_pixbuf(pixbuf)
 
+
 def logout():
     bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
 
@@ -95,6 +99,7 @@ def logout():
         -1,
         None
     )
+
 
 def execute_action(action):
     if action == "logout":
@@ -141,13 +146,6 @@ def on_timer_tick(action):
     timer_seconds -= 1
     TRAY.update(action, timer_seconds)
 
-    # if action in ("shutdown", "logout") and timer_seconds <= 60 and not DLG_TIMER.shown:
-    #     DLG_TIMER.show(
-    #         "Attention!",
-    #         f"Computer will {action} in {{seconds}} seconds.",
-    #         timer_seconds
-    #     )
-
     if action in ACTION_PROMPTS and timer_seconds <= 60 and not DLG_TIMER.shown:
         DLG_TIMER.show(
             "Attention!",
@@ -175,6 +173,7 @@ def on_timer_tick(action):
     print(timer_seconds)
     return True
 
+
 def get_seconds_until(hours, minutes):
     now = datetime.now(timezone.utc).astimezone()
 
@@ -190,9 +189,11 @@ def get_seconds_until(hours, minutes):
 
     return int((target - now).total_seconds())
 
+
 def format_time(entry, _event):
     value = int(entry.get_text() or 0)
     entry.set_text(f"{value:02d}")
+
 
 def validate_time(entry):
     text = entry.get_text()
@@ -293,6 +294,7 @@ def set_event_listeners():
     builder.get_object("inpHours").connect("focus-out-event", format_time)
     builder.get_object("inpMinutes").connect("focus-out-event", format_time)
 
+    builder.get_object("mnuAbout").connect("activate", DLG_ABOUT.show)
     builder.get_object("mnuQuit").connect("activate", quit_app)
 
 
@@ -337,9 +339,11 @@ def init_ui():
 
     set_event_listeners()
     WINDOW.connect("delete-event", on_window_delete)
+    WINDOW.connect("window-state-event", on_window_state)
 
 
 def restore_window():
+    WINDOW.deiconify()
     WINDOW.show()
     WINDOW.present()
 
@@ -352,11 +356,24 @@ def on_window_delete(_window, _event):
     return quit_app()
 
 
+def on_window_state(_window, event):
+    if (
+        g_timer_id is not None
+        and event.changed_mask & Gdk.WindowState.ICONIFIED
+        and event.new_window_state & Gdk.WindowState.ICONIFIED
+    ):
+        # GTK/GDK reports minimization as iconified; hide to the active tray
+        # instead so the running timer has no normal taskbar window.
+        WINDOW.hide()
+
+    return False
+
+
 def quit_app(*_args):
     if g_timer_id is not None:
         confirmed = msg_box(
-            "A timer is currently running.\nDo you really want to quit PowerTimer?",
-            "Quit PowerTimer",
+            f"A timer is currently running.\nDo you really want to quit {APP_INFO.name}?",
+            f"Quit {APP_INFO.name}",
             GTK.ButtonsType.YES_NO
         )
 

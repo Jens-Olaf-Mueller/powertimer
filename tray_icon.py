@@ -6,12 +6,13 @@ from pathlib import Path
 
 import gi
 
+from appinfo import APP_INFO
+
 gi.require_version("Gtk", "3.0")
 gi.require_version("XApp", "1.0")
 
 from gi.repository import Gtk as GTK
 from gi.repository import XApp
-
 
 # Short alias for gettext: marks Python strings for translation.
 _ = gettext.gettext
@@ -67,10 +68,12 @@ class TrayIcon:
         self.update(action, seconds)
         self.status_icon.set_visible(True)
 
+
     def update(self, action, seconds):
         """Update the tooltip from main.py's existing countdown value."""
         hours, remaining_seconds = divmod(max(seconds, 0), 3600)
-        minutes = remaining_seconds // 60
+        minutes, seconds = divmod(remaining_seconds, 60)
+
         action_name = {
             "shutdown": _("Shutdown"),
             "restart": _("Restart"),
@@ -80,14 +83,18 @@ class TrayIcon:
         }.get(action, action)
 
         # The tooltip belongs to the XApp StatusIcon, rather than the main
-        # window.  main.py calls this once per existing timer tick, so this
+        # window. main.py calls this once per existing timer tick, so this
         # display follows that single timer and does not calculate time itself.
-        tooltip = _("PowerTimer - {action} in {hours:02d}:{minutes:02d}").format(
+        tooltip = _("{appname} - {action} in {hh:02d}:{nn:02d}:{ss:02d}").format(
+            appname= APP_INFO.name,
             action=action_name,
-            hours=hours,
-            minutes=minutes,
+            hh=hours,
+            nn=minutes,
+            ss=seconds
         )
+
         self.status_icon.set_tooltip_text(tooltip)
+
 
     def hide(self):
         # Hiding tells Cinnamon's XApp Status Applet to remove the panel icon.
