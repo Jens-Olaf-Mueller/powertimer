@@ -40,6 +40,9 @@ class AboutBox:
         dialog.set_program_name(self.app_info.name)
         dialog.set_version(f"V{self.app_info.version}")
         dialog.set_comments(self.app_info.description)
+        dialog.set_authors([
+            self.app_info.author
+        ])
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             str(self.app_info.icon),

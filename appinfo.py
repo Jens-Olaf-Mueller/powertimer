@@ -9,10 +9,11 @@ class AppInfo:
     """Provides centralized metadata and project information for the application."""
     def __init__(self):
         self.name = "PowerTimer"
+        self.author = "Jens-Olaf Mueller"
 
         self.major = 1
-        self.minor = 0
-        self.revision = 5
+        self.minor = 1
+        self.revision = 0
 
         self.description = (
             "Simple shutdown timer for Linux Mint Cinnamon,\nwritten in Python with GTK."
