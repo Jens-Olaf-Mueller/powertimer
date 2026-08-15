@@ -3,7 +3,24 @@
 import subprocess
 from pathlib import Path
 
-PROJECT_DIR = Path(__file__).resolve().parent
+# Application modules always live beside this file.  In a source checkout the
+# resources and documentation are local too; an installed application uses the
+# shared Debian locations instead.
+APP_DIR = Path(__file__).resolve().parent
+
+# Prefer source-tree resources so local development does not accidentally use
+# the assets of an installed PowerTimer package.
+if (APP_DIR / "ui" / "powertimer.ui").is_file():
+    DATA_DIR = APP_DIR
+    DOC_DIR = APP_DIR
+else:
+    DATA_DIR = Path("/usr/share/powertimer")
+    DOC_DIR = Path("/usr/share/doc/powertimer")
+
+UI_FILE = DATA_DIR / "ui" / "powertimer.ui"
+STYLESHEET_FILE = DATA_DIR / "ui" / "style.css"
+IDLE_ICON = DATA_DIR / "icons" / "idle.svg"
+ACTIVE_ICON = DATA_DIR / "icons" / "active.svg"
 
 class AppInfo:
     """Provides centralized metadata and project information for the application."""
@@ -29,7 +46,7 @@ class AppInfo:
         # Project website / GitHub repository
         self.website = "https://github.com/Jens-Olaf-Mueller/powertimer"
 
-        self.icon = PROJECT_DIR / "icons/idle.svg"
+        self.icon = IDLE_ICON
 
 
     @property
@@ -44,14 +61,14 @@ class AppInfo:
         Return the content of the project's README.md file.
 
         Returns:
-            str | None: README content, or None if the file is unavailable.
+            str: README content, or an empty string if the file is unavailable.
         """
-        return self._read_text_file(PROJECT_DIR / "README.md")
+        return self._read_text_file(DOC_DIR / "README.md")
 
 
     @property
     def license(self):
-        return self._read_text_file(PROJECT_DIR / "LICENSE")
+        return self._read_text_file(DOC_DIR / "LICENSE")
 
 
     @property
@@ -65,7 +82,7 @@ class AppInfo:
         try:
             result = subprocess.run(
                 ["git", "log", "-1", "--format=%cs"],
-                cwd=PROJECT_DIR,
+                cwd=APP_DIR,
                 capture_output=True,
                 text=True,
                 check=True

@@ -2,11 +2,10 @@
 """Cinnamon/XApp panel icon support for a running PowerTimer timer."""
 
 import gettext
-from pathlib import Path
 
 import gi
 
-from appinfo import APP_INFO
+from appinfo import ACTIVE_ICON, APP_INFO
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("XApp", "1.0")
@@ -16,9 +15,6 @@ from gi.repository import XApp
 
 # Short alias for gettext: marks Python strings for translation.
 _ = gettext.gettext
-
-ACTIVE_ICON = Path(__file__).resolve().parent / "icons" / "active.svg"
-
 
 class TrayIcon:
     """Own the Cinnamon panel icon without exposing XApp details to main.py."""

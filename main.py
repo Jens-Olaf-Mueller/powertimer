@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 import gi
 
 from about import AboutBox
-from appinfo import APP_INFO
+from appinfo import ACTIVE_ICON, APP_INFO, IDLE_ICON, STYLESHEET_FILE, UI_FILE
 from timer_dialog import TimerDialog
 from tray_icon import TrayIcon
 
@@ -30,10 +30,10 @@ g_timer_id = None
 
 
 builder = GTK.Builder()
-builder.add_from_file("ui/powertimer.ui")
+builder.add_from_file(str(UI_FILE))
 
 css_provider = GTK.CssProvider()
-css_provider.load_from_path("ui/style.css")
+css_provider.load_from_path(str(STYLESHEET_FILE))
 
 screen = Gdk.Screen.get_default()
 GTK.StyleContext.add_provider_for_screen(
@@ -72,10 +72,10 @@ def toggle_app_state(start = True):
     builder.get_object("btnCancel").set_sensitive(start)
 
     # Python's ternary operator...
-    icon = "icons/active.svg" if start else "icons/idle.svg"
+    icon = ACTIVE_ICON if start else IDLE_ICON
 
-    WINDOW.set_icon_from_file(icon)
-    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(icon, 36, 36, True)
+    WINDOW.set_icon_from_file(str(icon))
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(str(icon), 36, 36, True)
     builder.get_object("imgStatus").set_from_pixbuf(pixbuf)
 
 
@@ -223,7 +223,7 @@ def start_timer(hours, minutes, action):
     toggle_app_state()
     TRAY.show(action, timer_seconds)
     WINDOW.hide()
-    print(f"Timer gestartet für {hours}:{minutes}")
+    print(f"Timer set for {hours}:{minutes}")
 
 
 def stop_timer():
@@ -233,7 +233,7 @@ def stop_timer():
         GLib.source_remove(g_timer_id)
         g_timer_id = None
 
-    print("Timer abgebrochen!")
+    print("Timer stopped!")
     toggle_app_state(False)
     TRAY.hide()
 
@@ -324,9 +324,9 @@ def can_hibernate():
 
 def init_ui():
     WINDOW.set_position(GTK.WindowPosition.CENTER)
-    WINDOW.set_icon_from_file("icons/idle.svg")
+    WINDOW.set_icon_from_file(str(IDLE_ICON))
     status_icon = builder.get_object("imgStatus")
-    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale("icons/idle.svg", 36, 36, True )
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(str(IDLE_ICON), 36, 36, True )
     status_icon.set_from_pixbuf(pixbuf)
     now = datetime.now(timezone.utc).astimezone()
     builder.get_object("inpHours").set_text(f"{now.hour:02d}")
