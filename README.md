@@ -2,9 +2,9 @@
 
 PowerTimer is a small GTK 3 desktop application for scheduling a power action at a specific local time. It is designed for Linux Mint Cinnamon and keeps a running timer accessible from the Cinnamon panel.
 
-![PowerTimer screenshot](docs/screenshots/powertimer.png)
 
 **Screenshots**
+
 <img src="img/idle.png">
 
 When a timer is active, the icon turns into a green state in titlebar and tray.
