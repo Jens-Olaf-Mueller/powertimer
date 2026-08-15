@@ -5,10 +5,17 @@ PowerTimer is a small GTK 3 desktop application for scheduling a power action at
 
 **Screenshots**
 
+The app starts with this UI.
+
 <img src="img/idle.png">
 
 When a timer is active, the icon turns into a green state in titlebar and tray.
+
 <img src="img/active.png">
+
+One minute before the timer exeeds, a message is displayed.
+
+<img src="img/warning.png">
 
 ## Features
 
@@ -69,6 +76,7 @@ appinfo.py          Application metadata
 ui/powertimer.ui    GTK Builder user interface
 ui/style.css        Application styles
 icons/              Idle and active application icons
+img/                Screenshots
 ```
 
 ## License
