@@ -4,7 +4,11 @@ PowerTimer is a small GTK 3 desktop application for scheduling a power action at
 
 ![PowerTimer screenshot](docs/screenshots/powertimer.png)
 
-> **Screenshot placeholder:** Add a screenshot at `docs/screenshots/powertimer.png` to display it here.
+**Screenshots**
+<img src="img/idle.png">
+
+When a timer is active, the icon turns into a green state in titlebar and tray.
+<img src="img/active.png">
 
 ## Features
 
