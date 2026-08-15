@@ -1,0 +1,15 @@
+Source: powertimer
+Section: utils
+Priority: optional
+Maintainer: Jens-Olaf Mueller <jens.olaf.mueller@googlemail.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.4
+Homepage: https://github.com/Jens-Olaf-Mueller/powertimer
+Rules-Requires-Root: no
+
+Package: powertimer
+Architecture: all
+Depends: ${misc:Depends}, python3, python3-gi, gir1.2-gtk-3.0, gir1.2-xapp-1.0
+Description: Shutdown and power-action timer for Linux Mint Cinnamon
+ PowerTimer provides a simple graphical timer for scheduled shutdown,
+ restart, logout, suspend and hibernate actions.

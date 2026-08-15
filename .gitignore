@@ -1,3 +1,14 @@
 # Python bytecode/cache
 __pycache__/
 *.py[cod]
+
+# Debian build files
+debian/.debhelper/
+debian/powertimer/
+debian/debhelper-build-stamp
+debian/files
+debian/*.debhelper.log
+debian/*.substvars
+
+# Release/build artifacts
+dist/

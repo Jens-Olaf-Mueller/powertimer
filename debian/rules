@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_compress:
+	dh_compress -XREADME.md -XLICENSE
+
+override_dh_fixperms:
+	dh_fixperms
+	chmod 644 debian/powertimer/usr/lib/powertimer/*.py
+	chmod 644 debian/powertimer/usr/share/powertimer/icons/*.svg
+	chmod 644 debian/powertimer/usr/share/powertimer/ui/*
+	chmod 644 debian/powertimer/usr/share/icons/hicolor/scalable/apps/powertimer.svg

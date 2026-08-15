@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=PowerTimer
+Comment=Simple shutdown timer for Linux Mint Cinnamon
+Exec=powertimer
+Icon=powertimer
+Terminal=false
+Categories=Utility;

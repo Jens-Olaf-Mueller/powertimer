@@ -1,0 +1,18 @@
+main.py                 usr/lib/powertimer/
+appinfo.py              usr/lib/powertimer/
+about.py                usr/lib/powertimer/
+timer_dialog.py         usr/lib/powertimer/
+tray_icon.py            usr/lib/powertimer/
+
+ui/powertimer.ui        usr/share/powertimer/ui/
+ui/style.css            usr/share/powertimer/ui/
+
+icons/idle.svg          usr/share/powertimer/icons/
+icons/active.svg        usr/share/powertimer/icons/
+icons/powertimer.svg    usr/share/icons/hicolor/scalable/apps/
+
+bin/powertimer          usr/bin/
+desktop/powertimer.desktop usr/share/applications/
+
+README.md               usr/share/doc/powertimer/
+LICENSE                 usr/share/doc/powertimer/
