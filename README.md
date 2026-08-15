@@ -27,6 +27,11 @@ One minute before the timer exeeds, a message is displayed.
 - Display a final 60-second confirmation dialog before shutdown or logout, with options to cancel or execute immediately.
 - Automatically disable hibernation when the system reports that it is unavailable.
 
+## ToDo
+
+- Make PowerTimer pinnable to the Cinnamon panel
+- Add icons to application menus
+
 ## Requirements
 
 - Linux Mint Cinnamon (the panel icon uses XApp)

@@ -6,3 +6,4 @@ Exec=powertimer
 Icon=powertimer
 Terminal=false
 Categories=Utility;
+StartupWMClass=PowerTimer

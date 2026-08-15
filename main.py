@@ -18,6 +18,9 @@ gi.require_version("GdkPixbuf", "2.0")
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib
 from gi.repository import Gtk as GTK
 
+GLib.set_prgname("powertimer")
+Gdk.set_program_class(APP_INFO.name)
+
 ACTION_PROMPTS = {
     "shutdown": "Computer will shut down in {seconds} seconds.",
     "logout": "You will be logged out in {seconds} seconds.",
